@@ -1,83 +1,74 @@
 import 'package:flutter/material.dart';
 
+
 class GridViewScreen extends StatefulWidget {
-  final String buttonText;
-  const GridViewScreen({super.key});
-  
+  final String name;
+  GridViewScreen({required this.name});
 
   @override
-  State<GridViewScreen> createState() => _GridViewScreenState();
+  _GridViewScreenState createState() => _GridViewScreenState();
 }
 
 class _GridViewScreenState extends State<GridViewScreen> {
-  Color buttonColor = Colors.amber;
-  int clickCount = 0;
-  bool isVisible = true;
+  late List<bool> buttonVisible;
+  late List<bool> colorChanged;
+
   @override
-  Widget build(BuildContext context) {
-    return isVisible
-        ? Container(
-            padding: const EdgeInsets.all(8),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonColor,
-              ),
-              onPressed: () {
-                setState(() {
-                  clickCount++;
-                  if (clickCount == 3) {
-                    isVisible = false;
-                  }
-                  // Toggle button color on button press
-                  if (clickCount % 2 == 1) {
-                    buttonColor = Colors.green;
-                  } else {
-                    buttonColor = Colors.amber;
-                  }
-                });
-              },
-              child: Text(widget.buttonText),
-            ),
-          )
-        : SizedBox(); // Return an empty SizedBox if button is not visible
+  void initState() {
+    super.initState();
+    buttonVisible = List<bool>.filled(widget.name.length, true);
+    colorChanged = List<bool>.filled(widget.name.length, false);
   }
-}
-
-class TogglingButton extends StatefulWidget {
-  final String buttonText;
-
-  const TogglingButton({super.key, required this.buttonText});
-
-  @override
-  _TogglingButtonState createState() => _TogglingButtonState();
-}
-
-class _TogglingButtonState extends State<TogglingButton> {
-  Color buttonColor = Colors.amber;
-  bool isButtonClicked = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isButtonClicked ? Colors.green : Colors.amber,
-        ),
-        onPressed: () {
-          setState(() {
-            // Toggle button color on button press
-            if (isButtonClicked) {
-              buttonColor = Colors.amber;
-            } else {
-              buttonColor = Colors.green;
-            }
-            // Toggle the state of the button
-            isButtonClicked = !isButtonClicked;
-          });
-        },
-        child: Text(widget.buttonText),
+    return Scaffold(
+      body: GridView.count(
+        padding: const EdgeInsets.all(20),
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        crossAxisCount: 2,
+        children: _buildButtons(),
       ),
     );
+  }
+
+  List<Widget> _buildButtons() {
+    List<Widget> buttons = [];
+    List<Widget> hiddenButtons = [];  // To store invisible buttons and show them at the end if needed
+
+    for (int index = 0; index < widget.name.length; index++) {
+      Widget button = Visibility(
+        visible: buttonVisible[index],
+        child: ElevatedButton(
+          child: Text(widget.name[index]),
+          onPressed: () {
+            setState(() {
+              if (colorChanged[index]) {
+                buttonVisible[index] = false;
+              }
+              colorChanged[index] = !colorChanged[index];
+            });
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                if (colorChanged[index]) return Colors.tealAccent;
+                return Colors.lime;
+              },
+            ),
+          ),
+        ),
+        replacement: Container(),  // Use an empty container as a placeholder
+      );
+
+      if (buttonVisible[index]) {
+        buttons.add(button);
+      } else {
+        hiddenButtons.add(button);  // Collect hidden buttons
+      }
+    }
+
+    return buttons + hiddenButtons;  // Add hidden buttons at the end
   }
 }

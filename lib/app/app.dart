@@ -12,7 +12,7 @@ class App extends StatelessWidget {
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => SplashScreen(),
-        '/home': (context) => GridViewScreen(),
+        '/home': (context) => GridViewScreen(name: "Risesh"),
         // Add other routes for your app screens here
       },
       // home: GridViewScreen(),
