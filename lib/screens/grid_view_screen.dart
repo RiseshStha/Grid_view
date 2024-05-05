@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class GridViewScreen extends StatefulWidget {
   final String name;
   GridViewScreen({required this.name});
@@ -23,6 +22,9 @@ class _GridViewScreenState extends State<GridViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Grid View"),
+      ),
       body: GridView.count(
         padding: const EdgeInsets.all(20),
         crossAxisSpacing: 10,
@@ -35,7 +37,8 @@ class _GridViewScreenState extends State<GridViewScreen> {
 
   List<Widget> _buildButtons() {
     List<Widget> buttons = [];
-    List<Widget> hiddenButtons = [];  // To store invisible buttons and show them at the end if needed
+    List<Widget> hiddenButtons =
+        []; // To store invisible buttons and show them at the end if needed
 
     for (int index = 0; index < widget.name.length; index++) {
       Widget button = Visibility(
@@ -52,23 +55,23 @@ class _GridViewScreenState extends State<GridViewScreen> {
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) {
+              (Set<MaterialState> states) {
                 if (colorChanged[index]) return Colors.tealAccent;
                 return Colors.lime;
               },
             ),
           ),
         ),
-        replacement: Container(),  // Use an empty container as a placeholder
+        replacement: Container(), // Use an empty container as a placeholder
       );
 
       if (buttonVisible[index]) {
         buttons.add(button);
       } else {
-        hiddenButtons.add(button);  // Collect hidden buttons
+        hiddenButtons.add(button); // Collect hidden buttons
       }
     }
 
-    return buttons + hiddenButtons;  // Add hidden buttons at the end
+    return buttons + hiddenButtons; // Add hidden buttons at the end
   }
 }
